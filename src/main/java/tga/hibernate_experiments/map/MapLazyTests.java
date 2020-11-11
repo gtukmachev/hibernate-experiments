@@ -96,7 +96,7 @@ public class MapLazyTests extends TestsWithHibernate {
 
         String m = gCarRef1.getMonth();
 
-        CarRef carRef = withLog("carRef = gCarRef1.getMonth("+m+")", () -> human.getCarRefs().get( m ));
+        CarRef carRef = withLog("carRef = human.getMonth("+m+")", () -> human.getCarRefs().get( m ));
         readCarRef(carRef);
 
     }

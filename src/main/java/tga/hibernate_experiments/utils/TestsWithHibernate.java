@@ -5,7 +5,9 @@ import org.hibernate.SessionFactory;
 import org.hibernate.boot.Metadata;
 import org.hibernate.boot.MetadataBuilder;
 import org.hibernate.boot.MetadataSources;
+import org.hibernate.boot.SessionFactoryBuilder;
 import org.hibernate.boot.registry.*;
+import org.hibernate.event.service.spi.EventListenerRegistry;
 import org.junit.After;
 import org.junit.Before;
 import org.slf4j.Logger;
@@ -40,7 +42,12 @@ public class TestsWithHibernate {
         Metadata metadata = metadataBuilder.build();
 
         // A SessionFactory is set up once for an application!
-        sessionFactory = metadata.buildSessionFactory();
+        SessionFactoryBuilder sessionFactoryBuilder  = metadata.getSessionFactoryBuilder();
+
+        // Adding an interceptor
+        sessionFactoryBuilder.applyInterceptor(new TestingHibernateInterceptor());
+
+        sessionFactory = sessionFactoryBuilder.build();
 
         openSessionAndStartTransaction();
     }
@@ -68,16 +75,7 @@ public class TestsWithHibernate {
     }
 
     protected <T> T getById(Class<T> clz, Serializable id) {
-        log.info("session.get({}, {}) ... ", clz.getSimpleName(), id);
-        T obj = null;
-
-        try {
-            obj = session.get(clz, id);
-        } finally {
-            log.info("session.get({}, {}}) ... done: {}", clz.getSimpleName(), id, obj);
-        }
-
-        return  obj;
+        return withLog("session.get("+(clz.getSimpleName())+", "+id+")", () -> session.get(clz, id) );
     }
     protected <T> T withLog(String operation, Supplier<T> action) {
         log.info(operation+"....");
