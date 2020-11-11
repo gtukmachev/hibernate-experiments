@@ -6,8 +6,8 @@ import org.hibernate.boot.Metadata;
 import org.hibernate.boot.MetadataBuilder;
 import org.hibernate.boot.MetadataSources;
 import org.hibernate.boot.SessionFactoryBuilder;
-import org.hibernate.boot.registry.*;
-import org.hibernate.event.service.spi.EventListenerRegistry;
+import org.hibernate.boot.registry.StandardServiceRegistry;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.junit.After;
 import org.junit.Before;
 import org.slf4j.Logger;
@@ -83,7 +83,7 @@ public class TestsWithHibernate {
         try {
             obj = action.get();
         } finally {
-            log.info(operation+".... done: {}", obj);
+            log.info(operation+".... done");
         }
         return obj;
     }

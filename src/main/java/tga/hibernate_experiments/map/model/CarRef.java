@@ -5,7 +5,10 @@ import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.LazyToOne;
 import org.hibernate.annotations.LazyToOneOption;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import java.io.Serializable;
 
 @Entity
@@ -22,7 +25,7 @@ public class CarRef implements Serializable {
     @Cascade(CascadeType.ALL)
     @ManyToOne(fetch = FetchType.LAZY)
     @LazyToOne(LazyToOneOption.PROXY)
-    private Car car;
+    public Car car;
 
     public CarRef() {
     }

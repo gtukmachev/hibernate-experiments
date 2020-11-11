@@ -8,7 +8,6 @@ import org.hibernate.annotations.LazyCollectionOption;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static javax.persistence.GenerationType.IDENTITY;
@@ -46,10 +45,18 @@ public class Human implements Serializable {
         this.carRefs = carRefs;
     }
 
-    public CarRef addCar(String month, Car car) {
-        CarRef carRef = new CarRef(this, month, car);
-        this.getCarRefs().put(month, carRef);
-        return carRef;
+    public Car putCar(String month, Car car) {
+        CarRef carRef = this.getCarRefs().get(month);
+
+        if (carRef == null) {
+            carRef = new CarRef(this, month, car);
+            this.getCarRefs().put(month, carRef);
+            return null;
+        }
+
+        Car oldCar = carRef.getCar();
+        carRef.setCar(car);
+        return oldCar;
     }
 
 

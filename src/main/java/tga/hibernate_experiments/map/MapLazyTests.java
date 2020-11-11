@@ -25,18 +25,15 @@ public class MapLazyTests extends TestsWithHibernate {
     private Car  gCar1;
     private Car  gCar2;
     private Car  gCar3;
-    private CarRef gCarRef1;
-    private CarRef gCarRef2;
-    private CarRef gCarRef3;
 
     private void initData() {
         gHuman = new Human("user-map-1");
         gCar1 = new Car("toyota", "1111", Instant.now().minus(365  , ChronoUnit.DAYS));
         gCar2 = new Car("subaru", "2222", Instant.now().minus(365*2, ChronoUnit.DAYS));
         gCar3 = new Car("honda",  "3333", Instant.now().minus(365*3, ChronoUnit.DAYS));
-        gCarRef1 = gHuman.addCar("2020-09", gCar1);
-        gCarRef2 = gHuman.addCar("2020-10", gCar2);
-        gCarRef3 = gHuman.addCar("2020-11", gCar3);
+        gHuman.putCar("2020-09", gCar1);
+        gHuman.putCar("2020-10", gCar2);
+        gHuman.putCar("2020-11", gCar3);
 
         session.save(gHuman);
 
@@ -45,9 +42,6 @@ public class MapLazyTests extends TestsWithHibernate {
             log.info("gCar1    = {}", gCar1);
             log.info("gCar2    = {}", gCar2);
             log.info("gCar3    = {}", gCar3);
-            log.info("gCarRef1 = {}", gCarRef1);
-            log.info("gCarRef2 = {}", gCarRef2);
-            log.info("gCarRef3 = {}", gCarRef3);
         MDC.put("lp", "");
         commitAndReopenSession();
     }
@@ -57,16 +51,22 @@ public class MapLazyTests extends TestsWithHibernate {
         MDC.put("lp", "CarRef(id=??) :");
 
         String carRefMonth = withLog("carRefMonth = carRef.getMonth()", carRef::getMonth);
+        log.warn("carRefMonth = {}", carRefMonth);
+
         Human  owner       = withLog("owner = carRef.getOwner()......", carRef::getOwner);
         int    ownerId     = withLog("ownerId = owner.getId()........", owner::getId);
+        log.warn("ownerId = {}", ownerId);
 
         MDC.put("lp", "CarRef("+ownerId+":"+carRefMonth+") :");
 
-        withLog("ownerName = owner.getName()", owner::getName);
+        String ownerName = withLog("ownerName = owner.getName()", owner::getName);
+        log.warn("ownerName = {}", ownerName);
 
         Car car = withLog("Car car = carRef.getCar()", carRef::getCar);
-                  withLog("carId = car.getId()  ", car::getId);
-                  withLog("carNum = car.getNum()", car::getNum);
+            int carId = withLog("carId = car.getId()  ", car::getId);
+            log.warn("carId = {}", carId);
+            String carNum = withLog("carNum = car.getNum()", car::getNum);
+            log.warn("carNum = {}", carNum);
 
         MDC.put("lp", "");
     }
@@ -77,7 +77,7 @@ public class MapLazyTests extends TestsWithHibernate {
         initData();
 
         int humanId = gHuman.getId();
-        String month = gCarRef1.getMonth();
+        String month = "2020-09";
 
         CarRef key = new CarRef(new Human(humanId), month);
 
@@ -86,7 +86,27 @@ public class MapLazyTests extends TestsWithHibernate {
         readCarRef(carRef);
     }
 
+    @Test
+    public void load_HumanFirst_then_carRef_by_byMonthAndHuman() {
+        initData();
 
+        int humanId = gHuman.getId();
+        String month = "2020-09";
+        CarRef key = new CarRef(new Human(humanId), month);
+
+        Human human = getById(Human.class, humanId);
+        log.warn("human.getName() = {}", human.getName());
+
+        CarRef carRef = withLog("session.get(CarRef.class, CarRef(new Human("+humanId+"), "+month+")  )", () -> session.get(CarRef.class, key) );
+
+        readCarRef(carRef);
+        log.warn("--------------------");
+        log.warn("            human = {}, id={}, name={}", human, human.getId(), human.getName());
+        log.warn("carRef.getOwner() = {}, id={}, name={}", carRef.getOwner(), carRef.getOwner().getId(), carRef.getOwner().getName());
+        log.warn("key.getOwner()    = {}, id={}, name={}", key.getOwner(), key.getOwner().getId(), key.getOwner().getName());
+        log.info("-----------------------------------------------------");
+        log.warn("");
+    }
 
     @Test
     public void test_collection_size_then_getFirst() {
@@ -94,7 +114,7 @@ public class MapLazyTests extends TestsWithHibernate {
 
         Human human = getById(Human.class, gHuman.getId());
 
-        String m = gCarRef1.getMonth();
+        String m = "2020-09";
 
         CarRef carRef = withLog("carRef = human.getMonth("+m+")", () -> human.getCarRefs().get( m ));
         readCarRef(carRef);
@@ -107,7 +127,7 @@ public class MapLazyTests extends TestsWithHibernate {
 
         Human human = getById(Human.class, gHuman.getId());
 
-        String[] keys = new String[]{gCarRef1.getMonth(), gCarRef2.getMonth(), gCarRef3.getMonth() };
+        String[] keys = new String[]{"2020-09", "2020-10", "2020-11" };
 
         for (int i = 0; i < 3; i++) {
             String key = keys[i];
@@ -115,6 +135,78 @@ public class MapLazyTests extends TestsWithHibernate {
             readCarRef(carRef);
         }
     }
+
+
+    private void printHumanCars(Human human){
+        int humanId = human.getId();
+        String humanName = human.getName();
+
+        human.getCarRefs().values().forEach(carRef -> {
+            Car car = carRef.getCar();
+            log.info("Human(id={}, name='{}').car[{}] -> Car(id={}, mark='{}', num='{}')",
+                    humanId, humanName,
+                    carRef.getMonth(),
+                    car.getId(), car.getMark(), car.getNum()
+            );
+        });
+
+    }
+
+    @Test
+    public void deleteCar(){
+        initData();
+
+        Human human = getById(Human.class, gHuman.getId());
+        printHumanCars(human);
+
+        CarRef existedCarRef = human.getCarRefs().remove("2020-11");
+
+        session.delete(existedCarRef);
+        printHumanCars(human);
+    }
+
+    @Test
+    public void replaceCar(){
+        initData();
+
+        Human human = getById(Human.class, gHuman.getId());
+        log.info("$$$$$$$$$$$$  initial $$$$$$$$$$$$$$$$$$$$$");
+        printHumanCars(human);
+
+        Car newCar = new Car("Mitsuki", "m12-ab", Instant.now().minus(30*3, ChronoUnit.DAYS));
+        Car oldCar = human.putCar( "2020-11", newCar );
+        if (oldCar != null) session.delete(oldCar);
+
+
+        log.info("$$$$$$$$$$$$  after the replacement $$$$$$$$$$$$$$$$$$$$$");
+        printHumanCars(human);
+
+        commitAndReopenSession();
+
+        Human h1 = getById(Human.class, gHuman.getId());
+        log.info("$$$$$$$$$$$$  in a new session $$$$$$$$$$$$$$$$$$$$$");
+        printHumanCars(h1);
+        printHumanCars(h1);
+
+
+    }
+
+
+
+/*    @Test
+    public void add_new_car_instead_of_previous(){
+        initData();
+
+        Human human = getById(Human.class, gHuman.getId());
+        printHumanCars(human);
+
+        CarRef existedCarRef = human.getCarRefs().get("2020-11");
+        Car existedCar = existedCarRef.getCar();
+        session.delete(existedCar);
+
+
+    }*/
+
 
 /*    @Test
     public void test_collection_travers_through_iterator() {
