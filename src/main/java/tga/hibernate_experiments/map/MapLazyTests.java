@@ -101,21 +101,22 @@ public class MapLazyTests extends TestsWithHibernate {
 
     }
 
-/*    @Test
+    @Test
     public void test_collection_travers_by_index() {
         initData();
 
-        User p = getById(User.class, personId);
+        Human human = getById(Human.class, gHuman.getId());
+
+        String[] keys = new String[]{gCarRef1.getMonth(), gCarRef2.getMonth(), gCarRef3.getMonth() };
 
         for (int i = 0; i < 3; i++) {
-            log.info("carRef"+i+" = p.getCarRefs().get("+i+")....");
-            CarRef carRef = p.getCarRefs().get(i);
-            log.info("carRef"+i+" = p.getCarRefs().get("+i+").... done: {}", carRef);
+            String key = keys[i];
+            CarRef carRef = withLog("carRef = human.getCarRefs().get(\""+key+"\")", () -> human.getCarRefs().get(key));
             readCarRef(carRef);
         }
     }
 
-    @Test
+/*    @Test
     public void test_collection_travers_through_iterator() {
         initData();
 
