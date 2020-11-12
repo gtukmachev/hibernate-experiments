@@ -1,0 +1,78 @@
+certificate: ""
+tui:
+  url: "http://172.16.10.233/wcf/CC2.svc"
+  mock.url: "http://172.16.10.38:8088/mockBasicHttpsBinding_ICC2"
+
+db:
+  server: "mssql-stg-sndbx.cvvhwliyzb2d.us-east-1.rds.amazonaws.com"
+  database: "credit_sandbox"
+  url: "jdbc:sqlserver://${db.server}:1433;sendStringParametersAsUnicode=false;databaseName=${db.database};"
+  hikari:
+    maximum-pool-size: 3
+    minimum-idle: 1
+
+
+membership.db:
+  url: "jdbc:mysql://membership-staging.savvymoney.com:3306/sandbox"
+
+
+pdf-service-client.api-base: "http://sandb-albui-eht71iyud4m5-697057145.us-east-1.elb.amazonaws.com/report-generator"
+
+app.internal.root.url: "http://sandb-albUI-QTSFWN85GV8F-941332579.us-east-1.elb.amazonaws.com"
+ow.update.event.handler.rest.api.url: "${app.internal.root.url}/ow-update-event-handler-rest-api"
+
+
+spring:
+  boot.admin.client.enabled: false
+  jpa.properties.hibernate.show_sql: true
+
+savvy:
+  v1:
+    services:
+      offers.url: "${app.internal.root.url}/po/rest/po"
+  v2:
+    services:
+      sba.url: "http://localhost:9000/sba"
+      partnership.redis-url: "redis://localhost:6379"
+    cache.redis.host: localhost
+
+
+savvymoney.v2:
+  activity.logging:
+    instance.server-id: dev-v2-local
+    queues:
+      activity-queue: https://queue.amazonaws.com/180544015908/st_log_activity_tracking
+      cancellation-queue: https://queue.amazonaws.com/180544015908/st_log_cancellation
+      credit-activity-queue: https://queue.amazonaws.com/180544015908/st_log_credit_activity_tracking
+      api-activity-queue: https://sqs.us-east-1.amazonaws.com/180544015908/st_log_api_activity
+      login-queue: https://queue.amazonaws.com/180544015908/st_log_login
+      offer-event-queue: https://queue.amazonaws.com/180544015908/st_log_offer_event_tracking
+      offer-impression-queue: https://queue.amazonaws.com/180544015908/st_log_offer_impression
+      registration-attempt-queue: https://queue.amazonaws.com/180544015908/st_log_registration_attempt
+      registration-queue: https://queue.amazonaws.com/180544015908/st_log_registration
+      user-activity-queue: https://queue.amazonaws.com/180544015908/st_log_user_activity
+      preapprovals-offer-queue: https://queue.amazonaws.com/180544015908/st_log_preapprovals_offer_event
+      preapprovals-offer-impression-queue: https://queue.amazonaws.com/180544015908/st_log_preapprovals_offer_impression
+
+  icontact.queue: https://queue.amazonaws.com/495291029999/dev_contact_sender
+
+  emails.queues:
+    welcome-email-queue: https://sqs.us-east-1.amazonaws.com/495291029999/dev_welcome_sender
+    inactive-email-queue: https://sqs.us-east-1.amazonaws.com/495291029999/dev_inactive_sender
+    reset-password-email-queue: https://sqs.us-east-1.amazonaws.com/495291029999/dev_password_reset
+
+  bi:
+    api.enabled: false
+    api.url: https://sandbox.savvymoney.com/event-proxy
+
+  offers.new-pdf-api: true
+
+
+savvymoney.notifications.client.enabled: false
+
+admin.job:
+  monthly-snapshot.active-member-queue: https://sqs.us-east-1.amazonaws.com/495291029999/monthly_snapshot_active_member_sandbox.fifo
+  monthly-snapshot.error-queue: https://sqs.us-east-1.amazonaws.com/495291029999/monthly_snapshot_event_fail_sandbox.fifo
+  report-refresh.score-update-queue: https://sqs.us-east-1.amazonaws.com/495291029999/SCORE_UPDATE_EVENT_SANDBOX
+
+
