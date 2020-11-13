@@ -16,11 +16,11 @@
     </properties>
 
     <dependencies>
-        <dependency> <artifactId>logback-classic</artifactId> <version>1.2.3</version>        <groupId>ch.qos.logback</groupId> </dependency>
-        <dependency> <artifactId>postgresql</artifactId>      <version>42.2.16</version>      <groupId>org.postgresql</groupId> </dependency>
-        <dependency> <artifactId>hibernate-core</artifactId>  <version>5.4.22.Final</version> <groupId>org.hibernate</groupId>  </dependency>
-
-        <dependency> <artifactId>junit</artifactId>           <version>4.12</version>         <groupId>junit</groupId>          </dependency>
+        <dependency> <artifactId>logback-classic</artifactId>   <version>1.2.3</version>        <groupId>ch.qos.logback</groupId> </dependency>
+        <dependency> <artifactId>postgresql</artifactId>        <version>42.2.16</version>      <groupId>org.postgresql</groupId> </dependency>
+        <dependency> <artifactId>hibernate-core</artifactId>    <version>5.4.22.Final</version> <groupId>org.hibernate</groupId>  </dependency>
+        <dependency> <artifactId>hibernate-ehcache</artifactId> <version>5.4.22.Final</version> <groupId>org.hibernate</groupId> </dependency>
+        <dependency> <artifactId>junit</artifactId>             <version>4.12</version>         <groupId>junit</groupId>          </dependency>
     </dependencies>
 
 </project>

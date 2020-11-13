@@ -18,7 +18,10 @@ public class MapLazyTests extends TestsWithHibernate {
     private static final Logger log = LoggerFactory.getLogger(TestsWithHibernate.class);
 
     public MapLazyTests() {
-        super(Arrays.asList(Human.class, CarRef.class, Car.class));
+        super(
+                Arrays.asList(Human.class, CarRef.class, Car.class),
+                false
+        );
     }
 
     private Human gHuman;

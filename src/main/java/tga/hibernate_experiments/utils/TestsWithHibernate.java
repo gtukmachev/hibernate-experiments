@@ -25,15 +25,22 @@ public class TestsWithHibernate {
 
     protected SessionFactory sessionFactory;
     protected Session session;
+    protected final boolean isCacheEnabled;
 
-    public TestsWithHibernate(List<Class<?>> entityClasses) {
+    public TestsWithHibernate(
+            List<Class<?>> entityClasses,
+            boolean isCacheEnabled
+    ) {
         this.entityClasses = entityClasses;
+        this.isCacheEnabled = isCacheEnabled;
     }
 
     @Before
     public void setUp() {
         MDC.clear(); MDC.put("lp", "");
-        StandardServiceRegistry registry = new StandardServiceRegistryBuilder().build();
+        StandardServiceRegistry registry = new StandardServiceRegistryBuilder()
+                .loadProperties(isCacheEnabled ? "hibernate-cache.properties" : "hibernate-no-cache.properties")
+                .build();
 
         MetadataSources sources = new MetadataSources(registry);
         for(Class<?> entityClass : entityClasses) sources.addAnnotatedClass( entityClass );

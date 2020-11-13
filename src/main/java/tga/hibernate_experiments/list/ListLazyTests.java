@@ -20,7 +20,10 @@ public class ListLazyTests extends TestsWithHibernate {
     private static final Logger log = LoggerFactory.getLogger(TestsWithHibernate.class);
 
     public ListLazyTests() {
-        super(Arrays.asList(Person.class, CardRef.class, Card.class));
+        super(
+                Arrays.asList(Person.class, CardRef.class, Card.class),
+                false
+        );
     }
 
     int personId = 0;
