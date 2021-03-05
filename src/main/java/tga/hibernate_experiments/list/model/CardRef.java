@@ -1,5 +1,7 @@
 package tga.hibernate_experiments.list.model;
 
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.LazyToOne;
 import org.hibernate.annotations.LazyToOneOption;
@@ -10,6 +12,8 @@ import javax.persistence.*;
 import static javax.persistence.GenerationType.IDENTITY;
 
 @Entity
+@Cacheable
+@Cache( usage = CacheConcurrencyStrategy.READ_WRITE)
 public class CardRef {
     @Id
     @GeneratedValue(strategy = IDENTITY)

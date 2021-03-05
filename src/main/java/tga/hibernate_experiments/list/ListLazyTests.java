@@ -22,7 +22,7 @@ public class ListLazyTests extends TestsWithHibernate {
     public ListLazyTests() {
         super(
                 Arrays.asList(Person.class, CardRef.class, Card.class),
-                false
+                true
         );
     }
 
@@ -64,7 +64,6 @@ public class ListLazyTests extends TestsWithHibernate {
         commitAndReopenSession();
     }
 
-
     protected void readCardRef(CardRef cardRef) {
         MDC.put("lp", "CardRef(id=??) :");
 
@@ -72,47 +71,45 @@ public class ListLazyTests extends TestsWithHibernate {
         MDC.put("lp", "CardRef(id=" + cardRefId + ") :");
 
         Person owner     = withLog("owner = cardRef.getOwner() ", cardRef::getOwner);
-        int    ownerId   = withLog("ownerId = owner.getId()    ", owner::getId);
-        String ownerName = withLog("ownerName = owner.getName()", owner::getName);
+        int    ownerId   = withLog("ownerId = owner.getId()    ", owner::getId  , true);
+        String ownerName = withLog("ownerName = owner.getName()", owner::getName, true);
 
         Card card = withLog("Card card = cardRef.getCard()", cardRef::getCard);
 
-        int    cardId  = withLog("cardId = card.getId()  ", card::getId);
-        String cardNum = withLog("cardNum = card.getNum()", card::getNum);
+        int    cardId  = withLog("cardId = card.getId()  ", card::getId , true);
+        String cardNum = withLog("cardNum = card.getNum()", card::getNum, true);
 
         MDC.put("lp", "");
     }
 
-    @Test
-    public void test1() {
+    @Test public void getById_loads_entity() {
         initData();
-
         CardRef cardRef = getById(CardRef.class, cardRef1Id);
+        readCardRef(cardRef);
 
+        log.warn("---------------------------------------------------------------------------------------------------");
+        commitAndReopenSession();
+
+        CardRef cardRef1 = getById(CardRef.class, cardRef1Id);
+        readCardRef(cardRef1);
+    }
+
+    @Test public void loadById_creates_lazy_proxy() {
+        initData();
+        CardRef cardRef = loadById(CardRef.class, cardRef1Id);
         readCardRef(cardRef);
     }
 
-    @Test
-    public void test_collection_size_then_getFirst() {
+    @Test public void test_collection_size_then_getFirst() {
         initData();
 
-        Person p = getById(Person.class, personId);
-
-        log.info("person.getCardRefs().size()....");
-        int cardRefsSize = p.getCardRefs().size();
-        log.info("person.getCardRefs().size().... done: {}", cardRefsSize);
-
-        log.info("cardRef = p.getCardRefs().get(0)....");
-        CardRef cardRef = p.getCardRefs().get(0);
-        log.info("cardRef = p.getCardRefs().get(0).... done: {}", cardRef);
+        Person p = withLog       ("getById(Person.class, "+personId+")", () -> getById(Person.class, personId) , false);
+        withLog                  ("person.getCardRefs().size()",         () -> p.getCardRefs().size()          , true);
+        CardRef cardRef = withLog("cardRef = p.getCardRefs().get(0)",    () -> p.getCardRefs().get(0)          , false);
         readCardRef(cardRef);
-
     }
 
-    @Test
-    public void test_collection_travers_by_index() {
-        initData();
-
+    private void readItemsByIndex() {
         Person p = getById(Person.class, personId);
 
         for (int i = 0; i < 3; i++) {
@@ -123,8 +120,28 @@ public class ListLazyTests extends TestsWithHibernate {
         }
     }
 
-    @Test
-    public void test_collection_travers_through_iterator() {
+    @Test public void test_collection_travers_by_index() {
+        initData();
+
+        readItemsByIndex();
+        commitAndReopenSession();
+
+        log.warn("---------------------------------------------------------------------------------------------------");
+        readItemsByIndex();
+        commitAndReopenSession();
+
+        log.warn("---------------------------------------------------------------------------------------------------");
+        Card card2 = getById(Card.class, card2Id);
+        card2.setNum("NEW-NUM");
+        commitAndReopenSession();
+
+        log.warn("---------------------------------------------------------------------------------------------------");
+        readItemsByIndex();
+        commitAndReopenSession();
+
+    }
+
+    @Test public void test_collection_travers_through_iterator() {
         initData();
 
         Person p = getById(Person.class, personId);

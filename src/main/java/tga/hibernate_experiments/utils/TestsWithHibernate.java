@@ -84,17 +84,28 @@ public class TestsWithHibernate {
     protected <T> T getById(Class<T> clz, Serializable id) {
         return withLog("session.get("+(clz.getSimpleName())+", "+id+")", () -> session.get(clz, id) );
     }
+
+    protected <T> T loadById(Class<T> clz, Serializable id) {
+        return withLog("session.load("+(clz.getSimpleName())+", "+id+")", () -> session.load(clz, id) );
+    }
+
     protected <T> T withLog(String operation, Supplier<T> action) {
+        return withLog(operation, action, false);
+    }
+
+    protected <T> T withLog(String operation, Supplier<T> action, boolean logResults) {
         log.info(operation+"....");
         T obj = null;
         try {
             obj = action.get();
         } finally {
-            log.info(operation+".... done");
+            if (logResults) {
+                log.info(operation+".... done --> '{}'", obj);
+            } else {
+                log.info(operation+".... done");
+            }
         }
         return obj;
     }
-
-
 
 }

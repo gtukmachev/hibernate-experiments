@@ -1,5 +1,6 @@
 package tga.hibernate_experiments.list.model;
 
+import javax.persistence.Cacheable;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -7,7 +8,12 @@ import java.time.Instant;
 
 import static javax.persistence.GenerationType.IDENTITY;
 
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+
 @Entity
+@Cacheable
+@Cache( usage = CacheConcurrencyStrategy.READ_WRITE)
 public class Card {
     @Id @GeneratedValue(strategy = IDENTITY)
     private int id;

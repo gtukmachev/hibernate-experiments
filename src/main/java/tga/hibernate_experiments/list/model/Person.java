@@ -10,8 +10,12 @@ import javax.persistence.*;
 import java.util.List;
 
 import static javax.persistence.GenerationType.IDENTITY;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 @Entity
+@Cacheable
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class Person {
 
     @Id
@@ -24,6 +28,7 @@ public class Person {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "owner")
     @Cascade(CascadeType.ALL)
     @LazyCollection(LazyCollectionOption.TRUE)
+    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     private List<CardRef> cardRefs;
 
     public Person() {
