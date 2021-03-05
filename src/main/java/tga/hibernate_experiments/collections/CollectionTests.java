@@ -7,12 +7,13 @@ import org.junit.Test;
 import lombok.val;
 import tga.hibernate_experiments.collections.domain.Item;
 import tga.hibernate_experiments.collections.domain.Owner;
+import tga.hibernate_experiments.utils.HibernateConfiguration;
 import tga.hibernate_experiments.utils.TestsWithHibernate;
 
 public class CollectionTests extends TestsWithHibernate {
 
     public CollectionTests() {
-        super(Arrays.asList(Owner.class, Item.class), false);
+        super(Arrays.asList(Owner.class, Item.class), HibernateConfiguration.no_l2_cache);
     }
 
 

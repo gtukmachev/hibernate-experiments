@@ -11,13 +11,14 @@ import org.slf4j.LoggerFactory;
 import lombok.val;
 import tga.hibernate_experiments.ids.domain.Hist;
 import tga.hibernate_experiments.ids.domain.Usr;
+import tga.hibernate_experiments.utils.HibernateConfiguration;
 import tga.hibernate_experiments.utils.TestsWithHibernate;
 
 public class IdsTests extends TestsWithHibernate {
     private static final Logger log = LoggerFactory.getLogger(IdsTests.class);
 
     public IdsTests() {
-        super(Arrays.asList(Usr.class, Hist.class), false);
+        super(Arrays.asList(Usr.class, Hist.class), HibernateConfiguration.no_l2_cache);
     }
 
 

@@ -7,6 +7,7 @@ import org.slf4j.MDC;
 import tga.hibernate_experiments.list.model.Card;
 import tga.hibernate_experiments.list.model.CardRef;
 import tga.hibernate_experiments.list.model.Person;
+import tga.hibernate_experiments.utils.HibernateConfiguration;
 import tga.hibernate_experiments.utils.TestsWithHibernate;
 
 import java.time.Instant;
@@ -22,7 +23,7 @@ public class ListLazyTests extends TestsWithHibernate {
     public ListLazyTests() {
         super(
                 Arrays.asList(Person.class, CardRef.class, Card.class),
-                true
+                HibernateConfiguration.no_l2_cache
         );
     }
 

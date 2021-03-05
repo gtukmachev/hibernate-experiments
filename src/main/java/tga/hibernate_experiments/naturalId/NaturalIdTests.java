@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import lombok.val;
 import tga.hibernate_experiments.naturalId.model.TwoKeysFoos;
+import tga.hibernate_experiments.utils.HibernateConfiguration;
 import tga.hibernate_experiments.utils.TestsWithHibernate;
 
 public class NaturalIdTests extends TestsWithHibernate {
@@ -19,7 +20,7 @@ public class NaturalIdTests extends TestsWithHibernate {
     private static final Logger logger = LoggerFactory.getLogger(NaturalIdTests.class);
 
     public NaturalIdTests() {
-        super(Collections.singletonList(TwoKeysFoos.class), false);
+        super(Collections.singletonList(TwoKeysFoos.class), HibernateConfiguration.no_l2_cache);
     }
 
     @Test

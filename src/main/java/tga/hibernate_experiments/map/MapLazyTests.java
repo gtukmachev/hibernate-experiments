@@ -7,6 +7,7 @@ import org.slf4j.MDC;
 import tga.hibernate_experiments.map.model.Car;
 import tga.hibernate_experiments.map.model.CarRef;
 import tga.hibernate_experiments.map.model.Human;
+import tga.hibernate_experiments.utils.HibernateConfiguration;
 import tga.hibernate_experiments.utils.TestsWithHibernate;
 
 import java.time.Instant;
@@ -19,8 +20,8 @@ public class MapLazyTests extends TestsWithHibernate {
 
     public MapLazyTests() {
         super(
-                Arrays.asList(Human.class, CarRef.class, Car.class),
-                false
+            Arrays.asList(Human.class, CarRef.class, Car.class),
+            HibernateConfiguration.no_l2_cache
         );
     }
 

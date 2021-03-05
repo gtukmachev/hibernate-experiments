@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 import tga.hibernate_experiments.cache.model.Report;
 import tga.hibernate_experiments.cache.model.ReportXml;
+import tga.hibernate_experiments.utils.HibernateConfiguration;
 import tga.hibernate_experiments.utils.TestsWithHibernate;
 
 import java.util.Arrays;
@@ -17,7 +18,7 @@ public class CacheTests extends TestsWithHibernate {
     public CacheTests() {
         super(
                 Arrays.asList(Report.class, ReportXml.class),
-                true
+                HibernateConfiguration.native_ehcache_2
         );
     }
 
